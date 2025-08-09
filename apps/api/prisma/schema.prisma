@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  driverProfile    DriverProfile?
+  driverLocation   DriverLocation?
+  ridesRider       Trip[]            @relation("RiderTrips")
+  ridesDriver      Trip[]            @relation("DriverTrips")
+  requestsAsRider  RideRequest[]
+  requestsAsDriver RideRequest[]     @relation("RequestDriver")
+}
+
+enum Role {
+  rider
+  driver
+  admin
+}
+
+model DriverProfile {
+  userId       String  @id
+  user         User    @relation(fields: [userId], references: [id])
+  vehicleMake  String
+  vehicleModel String
+  vehiclePlate String
+  isActive     Boolean @default(true)
+}
+
+model DriverLocation {
+  userId    String   @id
+  user      User     @relation(fields: [userId], references: [id])
+  lat       Float
+  lng       Float
+  updatedAt DateTime @updatedAt
+}
+
+model RideRequest {
+  id             String   @id @default(uuid())
+  riderId        String
+  rider          User     @relation(fields: [riderId], references: [id])
+  driverId       String?
+  driver         User?    @relation("RequestDriver", fields: [driverId], references: [id])
+  pickupLat      Float
+  pickupLng      Float
+  pickupAddress  String?
+  dropoffLat     Float
+  dropoffLng     Float
+  dropoffAddress String?
+  status         RideRequestStatus
+  createdAt      DateTime @default(now())
+}
+
+enum RideRequestStatus {
+  PENDING
+  ACCEPTED
+  CANCELLED
+}
+
+model Trip {
+  id         String   @id @default(uuid())
+  riderId    String
+  rider      User     @relation("RiderTrips", fields: [riderId], references: [id])
+  driverId   String
+  driver     User     @relation("DriverTrips", fields: [driverId], references: [id])
+  pickupLat  Float
+  pickupLng  Float
+  dropoffLat Float
+  dropoffLng Float
+  status     TripStatus
+  fareCents  Int      @default(0)
+  startedAt  DateTime @default(now())
+  endedAt    DateTime?
+}
+
+enum TripStatus {
+  DRIVER_ASSIGNED
+  ARRIVED
+  PICKED_UP
+  COMPLETED
+  CANCELLED
+}
