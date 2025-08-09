@@ -1,3 +1,2 @@
-# hello-world
-Hi humans!
-My name is Ahmed and i love playing soccer.
+
+hello! My name is Ahmed.
