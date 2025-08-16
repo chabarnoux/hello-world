@@ -1,0 +1,16 @@
+{
+  "name": "uber-mono",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run -w @uber/api build && npm run -w @uber/web build",
+    "dev": "npm run -w @uber/api dev & npm run -w @uber/web dev",
+    "lint": "npm run -w @uber/api lint && npm run -w @uber/web lint",
+    "prisma:generate": "npm run -w @uber/api prisma:generate",
+    "migrate": "npm run -w @uber/api migrate"
+  }
+}
